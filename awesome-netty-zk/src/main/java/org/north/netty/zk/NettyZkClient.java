@@ -8,6 +8,7 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldPrepender;
+import org.north.netty.zk.bean.ZkLoginRequest;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -84,22 +85,14 @@ public class NettyZkClient {
                   throw new Exception("can not connect to server: " + zkServer + ":" + zkPort);
               }
               ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
-              byteBuf.writeInt(protocolVersion);
-              byteBuf.writeLong(lastZxidSeen);
-              byteBuf.writeInt(timeout);
-              byteBuf.writeLong(sessionId);
-              byte [] bytes = new byte[16];
-              if(passWord == null){
-                  // 密码的字节长度
-                  byteBuf.writeInt(16);
-                  byteBuf.writeBytes(bytes);
-              }else{
-                  bytes = passWord.getBytes();
-                  // 密码的字节长度
-                  byteBuf.writeInt(bytes.length);
-                  byteBuf.writeBytes(bytes);
-              }
-              ChannelFuture channelFuture = this.channel.writeAndFlush(byteBuf).sync();
+              ZkLoginRequest zkLoginRequest = new ZkLoginRequest();
+              zkLoginRequest.setProtocolVersion(protocolVersion);
+              zkLoginRequest.setLastZxidSeen(lastZxidSeen);
+              zkLoginRequest.setLastZxidSeen(lastZxidSeen);
+              zkLoginRequest.setTimeout(timeout);
+              zkLoginRequest.setSessionId(sessionId);
+              zkLoginRequest.setPassword(passWord);
+              ChannelFuture channelFuture = this.channel.writeAndFlush(zkLoginRequest);
               return "success";
           }else{
               return "thread " + Thread.currentThread().getName() + " is connecting";
