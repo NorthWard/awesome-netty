@@ -2,16 +2,12 @@ package org.north.netty.zk.bean;
 
 import java.io.Serializable;
 
-/**
- * @author laihaohua
- */
-public class ZkLoginRequest implements Serializable {
+public class ZkLoginResp implements Serializable {
     private Integer protocolVersion;
-    private Long lastZxidSeen;
     private int timeout;
     private Long sessionId;
     private String password;
-    private boolean readOnly = true;
+    private boolean readOnly;
 
     public Integer getProtocolVersion() {
         return protocolVersion;
@@ -19,14 +15,6 @@ public class ZkLoginRequest implements Serializable {
 
     public void setProtocolVersion(Integer protocolVersion) {
         this.protocolVersion = protocolVersion;
-    }
-
-    public Long getLastZxidSeen() {
-        return lastZxidSeen;
-    }
-
-    public void setLastZxidSeen(Long lastZxidSeen) {
-        this.lastZxidSeen = lastZxidSeen;
     }
 
     public int getTimeout() {

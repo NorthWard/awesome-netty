@@ -2,21 +2,30 @@ package org.north.netty.zk;
 
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldPrepender;
+import org.north.netty.zk.bean.RequestHeader;
+import org.north.netty.zk.bean.ZkGetChildrenRequest;
 import org.north.netty.zk.bean.ZkLoginRequest;
+import org.north.netty.zk.utils.OpCode;
+import org.north.netty.zk.zkcodec.getchildren.ZkGetChildrenCodec;
+import org.north.netty.zk.zkcodec.getchildren.ZkGetChildrenLengthFieldPrepender;
+import org.north.netty.zk.zkcodec.getchildren.ZkGetChildrenRespDecoder;
+import org.north.netty.zk.zkcodec.login.*;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author laihaohua
  */
 public class NettyZkClient {
-    private Integer protocolVersion = 0;
+    private int protocolVersion = 0;
     private Long lastZxidSeen = 0L;
     private int timeout = 3000;
     private Long sessionId = 0L;
@@ -24,10 +33,12 @@ public class NettyZkClient {
     private int zkPort;
     private String passWord;
     private Channel channel;
-    private volatile AtomicBoolean isLogining;
+    private  AtomicBoolean isDoingLogin = new AtomicBoolean(false);
+    private  AtomicBoolean isLogon = new AtomicBoolean(false);
+    private  AtomicInteger xid = new AtomicInteger(1);
 
-    public NettyZkClient(){
-        this("localhost", 2181, null);
+    public NettyZkClient(int timeout) throws Exception {
+        this("localhost", 2181, "", timeout);
     }
 
     private boolean isSocketConnected(){
@@ -36,11 +47,15 @@ public class NettyZkClient {
         }
         return connectToServer();
     }
-    public NettyZkClient(String zkServer, int zkPort, String passWord){
+    public NettyZkClient(String zkServer, int zkPort, String passWord, int timeout) throws Exception {
           this.zkServer = zkServer;
           this.zkPort = zkPort;
           this.passWord = passWord;
-          connectToServer();
+          this.timeout = timeout;
+          boolean isConnectToServer = connectToServer();
+          if(!isConnectToServer){
+              throw new Exception("can not connect to server: " + zkServer + ":" + zkPort);
+          }
     }
     private boolean connectToServer(){
         Bootstrap bootstrap = new Bootstrap();
@@ -49,12 +64,18 @@ public class NettyZkClient {
         bootstrap.handler(new ChannelInitializer<NioSocketChannel>() {
             @Override
             protected void initChannel(NioSocketChannel nioSocketChannel) throws Exception {
-                nioSocketChannel.pipeline().addLast(new LengthFieldPrepender(4));
+                nioSocketChannel.pipeline()
+                        .addLast("respDecoder",new ZkLoginRespDecoder(2048, 0, 4, 0, 4))
+                        .addLast("lengthFieldPrepender", new ZkLoginLengthFieldPrepender(4))
+                        .addLast("zkLoginCodec", new ZkLoginCodec())
+                        .addLast("printRespHandler",new ZkLoginHandler())
+                        ;
             }
         });
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
         try {
-            ChannelFuture channelFuture =  bootstrap.connect(zkServer, zkPort).sync();
+            SocketAddress socketAddress = new InetSocketAddress(zkServer, zkPort);
+            ChannelFuture channelFuture =  bootstrap.connect(socketAddress).sync();
             this.channel = channelFuture.channel();
             return channel != null && channel.isActive();
         } catch (InterruptedException e) {
@@ -72,19 +93,13 @@ public class NettyZkClient {
      *     4. 8个字节的sessionId(Long, 默认为0)
      *     5. 4个字节, 表示passwd的长度n
      *     6. n个字节
-     *     a_.writeInt(protocolVersion,"protocolVersion");
-     *     a_.writeLong(lastZxidSeen,"lastZxidSeen");
-     *     a_.writeInt(timeOut,"timeOut");
-     *     a_.writeLong(sessionId,"sessionId");
-     *     a_.writeBuffer(passwd,"passwd");
-     * @return
+     *     @return
      */
     public String login() throws Exception {
-          if(!isLogining.compareAndSet(false, true)){
+          if(isDoingLogin.compareAndSet(false, true)){
               if(!isSocketConnected()){
                   throw new Exception("can not connect to server: " + zkServer + ":" + zkPort);
               }
-              ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
               ZkLoginRequest zkLoginRequest = new ZkLoginRequest();
               zkLoginRequest.setProtocolVersion(protocolVersion);
               zkLoginRequest.setLastZxidSeen(lastZxidSeen);
@@ -97,6 +112,32 @@ public class NettyZkClient {
           }else{
               return "thread " + Thread.currentThread().getName() + " is connecting";
           }
+    }
+    public String getChildren(String path){
+        ZkGetChildrenRequest zkGetChildrenRequest = new ZkGetChildrenRequest();
+        zkGetChildrenRequest.setPath(path);
+        zkGetChildrenRequest.setWatch(false);
+        RequestHeader h = new RequestHeader();
+        h.setType(OpCode.getChildren);
+        h.setXid(xid.getAndIncrement());
+        zkGetChildrenRequest.setRequestHeader(h);
+        Iterator<Map.Entry<String, ChannelHandler>> iterator = channel.pipeline().iterator();
+        while(iterator.hasNext()){
+            ChannelHandler handler = iterator.next().getValue();
+            Class clazz = handler.getClass();
+            if(ZkLoginChannelHandler.class.isAssignableFrom(clazz)){
+                channel.pipeline().remove(handler);
+            }
+        }
+        channel.pipeline()
+                .addLast(new ZkGetChildrenRespDecoder(2048,0,4,0,4))
+                .addLast(new ZkGetChildrenLengthFieldPrepender(4))
+                .addLast(new ZkGetChildrenCodec());
+        ChannelFuture channelFuture = this.channel.writeAndFlush(zkGetChildrenRequest);
+        return "success";
+    }
 
+    public static void main(String[] args) {
+        System.out.println("args = [" + ZkLoginChannelHandler.class.isAssignableFrom(ZkLoginCodec.class) + "]");
     }
 }
