@@ -5,8 +5,7 @@ import java.io.Serializable;
 /**
  * @author laihaohua
  */
-public class ZkGetChildrenRequest implements Serializable {
-    private RequestHeader requestHeader;
+public class ZkGetChildrenRequest  extends  RequestHeader implements ZkRequest {
     private String path;
     private boolean watch;
 
@@ -26,11 +25,8 @@ public class ZkGetChildrenRequest implements Serializable {
         this.watch = watch;
     }
 
-    public RequestHeader getRequestHeader() {
-        return requestHeader;
-    }
-
-    public void setRequestHeader(RequestHeader requestHeader) {
-        this.requestHeader = requestHeader;
+    @Override
+    public int getRequestId() {
+        return super.getXid();
     }
 }

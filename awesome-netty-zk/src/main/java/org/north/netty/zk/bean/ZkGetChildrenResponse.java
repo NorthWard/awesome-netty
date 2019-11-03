@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * @author laihaohua
  */
-public class ZkGetChildrenResponse implements Serializable {
+public class ZkGetChildrenResponse implements ZkResponse {
     private java.util.List<String> children;
 
     public List<String> getChildren() {

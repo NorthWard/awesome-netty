@@ -7,23 +7,30 @@ import org.north.netty.zk.bean.ZkLoginRequest;
 import org.north.netty.zk.bean.ZkLoginResp;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author laihaohua
  */
 public class ZkLoginCodec extends ByteToMessageCodec<ZkLoginRequest> implements ZkLoginChannelHandler{
+
+    public ZkLoginCodec(){
+
+    }
     @Override
     protected void encode(ChannelHandlerContext ctx, ZkLoginRequest msg, ByteBuf outByteBuf) throws Exception {
         outByteBuf.writeInt(msg.getProtocolVersion());
         outByteBuf.writeLong(msg.getLastZxidSeen());
         outByteBuf.writeInt(msg.getTimeout());
         outByteBuf.writeLong(msg.getSessionId());
-        byte [] bytes = new byte[16];
+        byte [] bytes = new byte[0];
         String passWord = msg.getPassword();
         if(passWord == null){
             // 密码的字节长度
-            outByteBuf.writeInt(16);
+            outByteBuf.writeInt(0);
             outByteBuf.writeBytes(bytes);
         }else{
             bytes = passWord.getBytes();

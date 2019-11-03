@@ -15,10 +15,13 @@ import java.util.List;
  * @author laihaohua
  */
 public class ZkGetChildrenCodec extends ByteToMessageCodec<ZkGetChildrenRequest> {
+    public ZkGetChildrenCodec(){
+
+    }
     @Override
     protected void encode(ChannelHandlerContext ctx, ZkGetChildrenRequest msg, ByteBuf out) throws Exception {
-        out.writeInt(msg.getRequestHeader().getXid());
-        out.writeInt(msg.getRequestHeader().getType());
+        out.writeInt(msg.getXid());
+        out.writeInt(msg.getType());
         String path = msg.getPath();
         if(path == null){
             // 字符串的长度
@@ -51,7 +54,7 @@ public class ZkGetChildrenCodec extends ByteToMessageCodec<ZkGetChildrenRequest>
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         ZkGetChildrenResponse zkGetChildrenResponse = new ZkGetChildrenResponse();
-        int xid = in.readInt();
+        //int xid = in.readInt();
         long zxid = in.readLong();
         int err = in.readInt();
         if(err == 0){

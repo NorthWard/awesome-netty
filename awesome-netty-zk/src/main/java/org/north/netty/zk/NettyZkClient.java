@@ -9,6 +9,7 @@ import org.north.netty.zk.bean.RequestHeader;
 import org.north.netty.zk.bean.ZkGetChildrenRequest;
 import org.north.netty.zk.bean.ZkLoginRequest;
 import org.north.netty.zk.utils.OpCode;
+import org.north.netty.zk.zkcodec.ZkCodec;
 import org.north.netty.zk.zkcodec.getchildren.ZkGetChildrenCodec;
 import org.north.netty.zk.zkcodec.getchildren.ZkGetChildrenLengthFieldPrepender;
 import org.north.netty.zk.zkcodec.getchildren.ZkGetChildrenRespDecoder;
@@ -118,9 +119,8 @@ public class NettyZkClient {
         zkGetChildrenRequest.setPath(path);
         zkGetChildrenRequest.setWatch(false);
         RequestHeader h = new RequestHeader();
-        h.setType(OpCode.getChildren);
-        h.setXid(xid.getAndIncrement());
-        zkGetChildrenRequest.setRequestHeader(h);
+        zkGetChildrenRequest.setType(OpCode.getChildren);
+        zkGetChildrenRequest.setXid(xid.getAndIncrement());
         Iterator<Map.Entry<String, ChannelHandler>> iterator = channel.pipeline().iterator();
         while(iterator.hasNext()){
             ChannelHandler handler = iterator.next().getValue();
@@ -132,7 +132,7 @@ public class NettyZkClient {
         channel.pipeline()
                 .addLast(new ZkGetChildrenRespDecoder(2048,0,4,0,4))
                 .addLast(new ZkGetChildrenLengthFieldPrepender(4))
-                .addLast(new ZkGetChildrenCodec());
+                .addLast(new ZkCodec());
         ChannelFuture channelFuture = this.channel.writeAndFlush(zkGetChildrenRequest);
         return "success";
     }
