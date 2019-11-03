@@ -8,6 +8,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
+import org.north.netty.common.utils.SerializeUtils;
 import org.north.netty.zk.bean.create.ZkCreateResponse;
 import org.north.netty.zk.bean.create.ZkAcl;
 import org.north.netty.zk.bean.create.ZkAclId;
@@ -19,7 +20,6 @@ import org.north.netty.zk.bean.login.ZkLoginResp;
 import org.north.netty.zk.registrys.ZkRegistry;
 import org.north.netty.zk.utils.CreateMode;
 import org.north.netty.zk.utils.OpCode;
-import org.north.netty.zk.utils.SerializeUtils;
 import org.north.netty.zk.zkcodec.login.ZkLoginCodec;
 import org.north.netty.zk.zkcodec.login.ZkLoginHandler;
 

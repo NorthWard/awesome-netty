@@ -1,4 +1,4 @@
-package org.north.netty.zk.utils;
+package org.north.netty.common.utils;
 
 import io.netty.buffer.ByteBuf;
 

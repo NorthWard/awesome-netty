@@ -1,16 +1,13 @@
 package org.north.netty.zk.zkcodec.getchildren;
 
-import com.google.gson.Gson;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageCodec;
+import org.north.netty.common.utils.SerializeUtils;
 import org.north.netty.zk.bean.getchildren.ZkGetChildrenRequest;
 import org.north.netty.zk.bean.getchildren.ZkGetChildrenResponse;
 import org.north.netty.zk.registrys.ZkRegistry;
-import org.north.netty.zk.utils.SerializeUtils;
 import org.north.netty.zk.zkcodec.ZkAbstractCodec;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 

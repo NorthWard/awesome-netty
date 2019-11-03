@@ -14,6 +14,7 @@
         <module>awesome-netty-kafka</module>
         <module>awesome-netty-mysql</module>
         <module>awesome-netty-elasticsearch</module>
+        <module>awesome-netty-common</module>
     </modules>
 
     <dependencies>

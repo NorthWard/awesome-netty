@@ -10,6 +10,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>awesome-netty-zk</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.north.netty</groupId>
+            <artifactId>awesome-netty-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>

@@ -3,11 +3,10 @@ package org.north.netty.zk.zkcodec.login;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
+import org.north.netty.common.utils.SerializeUtils;
 import org.north.netty.zk.bean.login.ZkLoginRequest;
 import org.north.netty.zk.bean.login.ZkLoginResp;
-import org.north.netty.zk.utils.SerializeUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
