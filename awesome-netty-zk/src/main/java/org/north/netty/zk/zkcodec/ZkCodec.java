@@ -13,10 +13,10 @@ import java.util.List;
 /**
  * @author laihaohua
  */
-public class ZkCodec extends ByteToMessageCodec<ZkRequest> {
-    private ZkRegistry codecRegistry;
-    public ZkCodec(ZkRegistry codecRegistry){
-         this.codecRegistry = codecRegistry;
+public class ZkCodec extends ZkAbstractCodec<ZkRequest> {
+
+    public ZkCodec(ZkRegistry codecRegistry) {
+        super(codecRegistry);
     }
 
     @Override

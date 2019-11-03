@@ -8,18 +8,24 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
-import org.north.netty.zk.bean.ZkResponse;
+import org.north.netty.zk.bean.create.ZkCreateResponse;
+import org.north.netty.zk.bean.create.ZkAcl;
+import org.north.netty.zk.bean.create.ZkAclId;
+import org.north.netty.zk.bean.create.ZkCreateRequest;
 import org.north.netty.zk.bean.getchildren.ZkGetChildrenRequest;
 import org.north.netty.zk.bean.getchildren.ZkGetChildrenResponse;
 import org.north.netty.zk.bean.login.ZkLoginRequest;
 import org.north.netty.zk.bean.login.ZkLoginResp;
 import org.north.netty.zk.registrys.ZkRegistry;
+import org.north.netty.zk.utils.CreateMode;
 import org.north.netty.zk.utils.OpCode;
+import org.north.netty.zk.utils.SerializeUtils;
 import org.north.netty.zk.zkcodec.login.ZkLoginCodec;
 import org.north.netty.zk.zkcodec.login.ZkLoginHandler;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -135,13 +141,42 @@ public class NettyZkClient {
         ZkGetChildrenRequest zkGetChildrenRequest = new ZkGetChildrenRequest();
         zkGetChildrenRequest.setPath(path);
         zkGetChildrenRequest.setWatch(false);
-        zkGetChildrenRequest.setType(OpCode.getChildren);
+        zkGetChildrenRequest.setType(OpCode.GET_CHILDREN);
         int xid = atomicIntegerXid.getAndIncrement();
         zkGetChildrenRequest.setXid(xid);
         ChannelFuture channelFuture = this.channel.writeAndFlush(zkGetChildrenRequest);
         try {
             ZkGetChildrenResponse response = (ZkGetChildrenResponse)zkRegistry.getResp(xid, this.timeout, TimeUnit.MILLISECONDS);
             return response == null ? null : response.getChildren();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public ZkCreateResponse create(String path, Object data, CreateMode mode){
+        ZkCreateRequest createRequest = new ZkCreateRequest();
+        createRequest.setPath(path);
+        createRequest.setData(SerializeUtils.toByteArray(data));
+        int xid = atomicIntegerXid.getAndIncrement();
+        createRequest.setXid(xid);
+        createRequest.setType(OpCode.CREATE);
+        /*******************/
+        ZkAclId zkAclId = new ZkAclId();
+        // 所有人都有权限
+        zkAclId.setId("anyone");
+        zkAclId.setScheme("world");
+        ZkAcl zkAcl = new ZkAcl();
+        // 拥有read write update delete admin权限
+        zkAcl.setPerms(31);
+        zkAcl.setId(zkAclId);
+        /*******************/
+        createRequest.setAcl(new ArrayList<>());
+        createRequest.getAcl().add(zkAcl);
+        createRequest.setFlags(mode.getFlag());
+        ChannelFuture channelFuture = this.channel.writeAndFlush(createRequest);
+        try {
+            ZkCreateResponse response = (ZkCreateResponse)zkRegistry.getResp(xid, this.timeout, TimeUnit.MILLISECONDS);
+            return response;
         } catch (TimeoutException e) {
             e.printStackTrace();
         }

@@ -7,6 +7,8 @@ import io.netty.handler.codec.ByteToMessageCodec;
 import org.north.netty.zk.bean.getchildren.ZkGetChildrenRequest;
 import org.north.netty.zk.bean.getchildren.ZkGetChildrenResponse;
 import org.north.netty.zk.registrys.ZkRegistry;
+import org.north.netty.zk.utils.SerializeUtils;
+import org.north.netty.zk.zkcodec.ZkAbstractCodec;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -15,29 +17,18 @@ import java.util.List;
 /**
  * @author laihaohua
  */
-public class ZkGetChildrenCodec extends ByteToMessageCodec<ZkGetChildrenRequest> {
-    private ZkRegistry codecRegistry;
-    public ZkGetChildrenCodec(ZkRegistry codecRegistry){
-        this.codecRegistry = codecRegistry;
+public class ZkGetChildrenCodec extends ZkAbstractCodec<ZkGetChildrenRequest> {
+    public ZkGetChildrenCodec(ZkRegistry codecRegistry) {
+        super(codecRegistry);
     }
+
     @Override
     protected void encode(ChannelHandlerContext ctx, ZkGetChildrenRequest msg, ByteBuf out) throws Exception {
         out.writeInt(msg.getXid());
         out.writeInt(msg.getType());
         String path = msg.getPath();
-        if(path == null){
-            // 字符串的长度
-            out.writeInt(-1);
-        }else{
-           byte [] bytes = path.getBytes(StandardCharsets.UTF_8);
-            // 字符串的长度
-            out.writeInt(bytes.length);
-            out.writeBytes(bytes);
-        }
+        SerializeUtils.writeStringToBuffer(path, out);
         out.writeBoolean(msg.isWatch());
-        int len = out.writerIndex();
-        byte [] tmp = new byte[len];
-        out.getBytes(0, tmp);
     }
 
     /**
@@ -57,27 +48,21 @@ public class ZkGetChildrenCodec extends ByteToMessageCodec<ZkGetChildrenRequest>
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         ZkGetChildrenResponse zkGetChildrenResponse = new ZkGetChildrenResponse();
         int xid = in.readInt();
-        long zxid = in.readLong();
+        long zXid = in.readLong();
         int err = in.readInt();
         zkGetChildrenResponse.setXid(xid);
-        zkGetChildrenResponse.setZxid(zxid);
+        zkGetChildrenResponse.setZxid(zXid);
         zkGetChildrenResponse.setErr(err);
         if(err == 0){
             int listLen = in.readInt();
             if(listLen < 0){
+                codecRegistry.putResp(xid, zkGetChildrenResponse);
                 return;
             }
             List<String> list = new ArrayList<>(listLen);
             while(listLen-- > 0){
-                    int strLen = in.readInt();
-                    if(strLen < 0){
-                        continue;
-                    }
-                    byte [] bytes = new byte[strLen];
-                    in.readBytes(bytes);
-                    String s = new String(bytes, StandardCharsets.UTF_8);
+                    String s = SerializeUtils.readStringToBuffer(in);
                     list.add(s);
-
             }
             zkGetChildrenResponse.setChildren(list);
         }
