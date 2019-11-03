@@ -5,27 +5,35 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
 import org.north.netty.zk.bean.ZkRequest;
 import org.north.netty.zk.factories.ZkCodecFactories;
+import org.north.netty.zk.registrys.ZkRegistry;
 
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
 
+/**
+ * @author laihaohua
+ */
 public class ZkCodec extends ByteToMessageCodec<ZkRequest> {
-    private Map<Integer, ByteToMessageCodec> codecMap = new ConcurrentHashMap<>();
+    private ZkRegistry codecRegistry;
+    public ZkCodec(ZkRegistry codecRegistry){
+         this.codecRegistry = codecRegistry;
+    }
 
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, ZkRequest zkRequest, ByteBuf byteBuf) throws Exception {
-        ByteToMessageCodec codec =  ZkCodecFactories.getCodec(zkRequest.getClass());
+        ByteToMessageCodec codec =  ZkCodecFactories.getCodec(zkRequest, codecRegistry);
         Method method = codec.getClass().getDeclaredMethod("encode", ChannelHandlerContext.class, Object.class, ByteBuf.class);
         method.setAccessible(true);
-        codecMap.putIfAbsent(zkRequest.getRequestId(), codec);
+        int requestId = zkRequest.getRequestId();
+        if(requestId == 0){
+            throw  new Exception(" requestId can not be zero");
+        }
+        codecRegistry.putCodec(requestId, codec);
         try {
             method.invoke(codec, channelHandlerContext, zkRequest, byteBuf);
         }catch (Exception e){
             e.printStackTrace();
-            codecMap.remove(zkRequest.getRequestId());
+            codecRegistry.removeCodec(requestId);
         }
 
     }
@@ -33,12 +41,15 @@ public class ZkCodec extends ByteToMessageCodec<ZkRequest> {
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
         int xid = byteBuf.readInt();
-        ByteToMessageCodec codec = codecMap.get(xid);
+        ByteToMessageCodec codec = codecRegistry.getCodec(xid);
         if(codec == null){
             throw new IllegalAccessException("cannot find codec for xid = " + xid);
         }
+        // 恢复readIndex, 让后面的handler也能读到xid
+        byteBuf.readerIndex(byteBuf.readerIndex() - 4);
         Method method = codec.getClass().getDeclaredMethod("decode", ChannelHandlerContext.class, ByteBuf.class, List.class);
         method.setAccessible(true);
         method.invoke(codec, channelHandlerContext, byteBuf, list);
+        codecRegistry.removeCodec(xid);
     }
 }

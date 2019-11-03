@@ -1,4 +1,4 @@
-package org.north.netty.zk.bean;
+package org.north.netty.zk.bean.login;
 
 import java.io.Serializable;
 

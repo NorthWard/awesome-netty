@@ -1,8 +1,9 @@
 package org.north.netty.zk.factories;
 
 import io.netty.handler.codec.ByteToMessageCodec;
-import org.north.netty.zk.bean.ZkGetChildrenRequest;
+import org.north.netty.zk.bean.getchildren.ZkGetChildrenRequest;
 import org.north.netty.zk.bean.ZkRequest;
+import org.north.netty.zk.registrys.ZkRegistry;
 import org.north.netty.zk.zkcodec.getchildren.ZkGetChildrenCodec;
 
 /**
@@ -10,11 +11,11 @@ import org.north.netty.zk.zkcodec.getchildren.ZkGetChildrenCodec;
  * @author laihaohua
  */
 public class ZkCodecFactories {
-    public static ByteToMessageCodec getCodec(Class<? extends ZkRequest> clazz) throws IllegalAccessException, InstantiationException {
-       if(ZkGetChildrenRequest.class.isAssignableFrom(clazz)){
-            return new ZkGetChildrenCodec();
+    public static ByteToMessageCodec getCodec(ZkRequest zkRequest, ZkRegistry codecRegistry) throws IllegalAccessException {
+       if(zkRequest instanceof  ZkGetChildrenRequest){
+            return new ZkGetChildrenCodec(codecRegistry);
         }
 
-        throw new IllegalAccessException("cannot find codec for " + clazz);
+        throw new IllegalAccessException("cannot find codec for " + zkRequest.getClass());
     }
 }

@@ -4,8 +4,9 @@ import com.google.gson.Gson;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
-import org.north.netty.zk.bean.ZkGetChildrenRequest;
-import org.north.netty.zk.bean.ZkGetChildrenResponse;
+import org.north.netty.zk.bean.getchildren.ZkGetChildrenRequest;
+import org.north.netty.zk.bean.getchildren.ZkGetChildrenResponse;
+import org.north.netty.zk.registrys.ZkRegistry;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -15,8 +16,9 @@ import java.util.List;
  * @author laihaohua
  */
 public class ZkGetChildrenCodec extends ByteToMessageCodec<ZkGetChildrenRequest> {
-    public ZkGetChildrenCodec(){
-
+    private ZkRegistry codecRegistry;
+    public ZkGetChildrenCodec(ZkRegistry codecRegistry){
+        this.codecRegistry = codecRegistry;
     }
     @Override
     protected void encode(ChannelHandlerContext ctx, ZkGetChildrenRequest msg, ByteBuf out) throws Exception {
@@ -54,9 +56,12 @@ public class ZkGetChildrenCodec extends ByteToMessageCodec<ZkGetChildrenRequest>
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         ZkGetChildrenResponse zkGetChildrenResponse = new ZkGetChildrenResponse();
-        //int xid = in.readInt();
+        int xid = in.readInt();
         long zxid = in.readLong();
         int err = in.readInt();
+        zkGetChildrenResponse.setXid(xid);
+        zkGetChildrenResponse.setZxid(zxid);
+        zkGetChildrenResponse.setErr(err);
         if(err == 0){
             int listLen = in.readInt();
             if(listLen < 0){
@@ -75,9 +80,7 @@ public class ZkGetChildrenCodec extends ByteToMessageCodec<ZkGetChildrenRequest>
 
             }
             zkGetChildrenResponse.setChildren(list);
-            System.out.println(new Gson().toJson(list));
         }
-
-
+        codecRegistry.putResp(xid, zkGetChildrenResponse);
     }
 }

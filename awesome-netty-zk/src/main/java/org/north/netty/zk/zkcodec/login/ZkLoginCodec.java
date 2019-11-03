@@ -3,19 +3,16 @@ package org.north.netty.zk.zkcodec.login;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
-import org.north.netty.zk.bean.ZkLoginRequest;
-import org.north.netty.zk.bean.ZkLoginResp;
+import org.north.netty.zk.bean.login.ZkLoginRequest;
+import org.north.netty.zk.bean.login.ZkLoginResp;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author laihaohua
  */
-public class ZkLoginCodec extends ByteToMessageCodec<ZkLoginRequest> implements ZkLoginChannelHandler{
+public class ZkLoginCodec extends ByteToMessageCodec<ZkLoginRequest>{
 
     public ZkLoginCodec(){
 

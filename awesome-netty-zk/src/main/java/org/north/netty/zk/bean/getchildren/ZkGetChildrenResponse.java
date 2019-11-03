@@ -1,12 +1,14 @@
-package org.north.netty.zk.bean;
+package org.north.netty.zk.bean.getchildren;
 
-import java.io.Serializable;
+import org.north.netty.zk.bean.AbstractZkResonse;
+import org.north.netty.zk.bean.ZkResponse;
+
 import java.util.List;
 
 /**
  * @author laihaohua
  */
-public class ZkGetChildrenResponse implements ZkResponse {
+public class ZkGetChildrenResponse extends AbstractZkResonse implements ZkResponse {
     private java.util.List<String> children;
 
     public List<String> getChildren() {
