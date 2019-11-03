@@ -10,6 +10,10 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>awesome-netty-zk</module>
+        <module>awesome-netty-redis</module>
+        <module>awesome-netty-kafka</module>
+        <module>awesome-netty-mysql</module>
+        <module>awesome-netty-elasticsearch</module>
     </modules>
 
     <dependencies>
