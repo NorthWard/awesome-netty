@@ -1,7 +1,6 @@
 package com.north.netty.redis;
 
-import com.north.netty.redis.cmd.impl.getcmd.str.GetStringCmd;
-import com.north.netty.redis.cmd.impl.setcmd.str.SetStringCmd;
+import com.north.netty.redis.config.RedisConfig;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -9,17 +8,17 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
-/**
- * @author laihaohua
- */
-public class RedisStringClient {
-    private String host;
-    private int port;
-    private Channel channel;
+import java.nio.channels.Channel;
+import java.util.ArrayDeque;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingDeque;
 
-    public RedisStringClient(String host, int port) {
-        this.host = host;
-        this.port = port;
+public class ConnectionPool {
+    private Queue<Channel> connections;
+    public ConnectionPool(){
+        connections = new LinkedBlockingDeque<>(RedisConfig.connectionCount);
+    }
+    private void init(){
         Bootstrap bootstrap = new Bootstrap();
         EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
         bootstrap.group(eventLoopGroup);
@@ -31,13 +30,13 @@ public class RedisStringClient {
                 nioSocketChannel.pipeline()
                         .addLast(new StringEncoder())
                         .addLast(new StringDecoder())
-                .addLast(new ChannelInboundHandlerAdapter(){
-                    @Override
-                    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                        super.channelRead(ctx, msg);
-                        System.out.println("ctx = [" + ctx + "], msg = [" + msg + "]");
-                    }
-                });
+                        .addLast(new ChannelInboundHandlerAdapter(){
+                            @Override
+                            public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+                                super.channelRead(ctx, msg);
+                                System.out.println("ctx = [" + ctx + "], msg = [" + msg + "]");
+                            }
+                        });
             }
         });
         try {
@@ -48,17 +47,4 @@ public class RedisStringClient {
         }
     }
 
-    public boolean set(String key, String v){
-        SetStringCmd setCmd = new SetStringCmd(key, v);
-        channel.writeAndFlush(setCmd.build());
-        return true;
-
-    }
-
-    public boolean get(String key){
-        GetStringCmd getStringCmd = new GetStringCmd(key);
-        channel.writeAndFlush(getStringCmd.build());
-        return true;
-
-    }
 }

@@ -43,7 +43,7 @@ public class ZkCodec extends ZkAbstractCodec<ZkRequest> {
         int xid = byteBuf.readInt();
         ByteToMessageCodec codec = codecRegistry.getCodec(xid);
         if(codec == null){
-            throw new IllegalAccessException("cannot find codec for xid = " + xid);
+            throw new IllegalAccessException("cannot find codecs for xid = " + xid);
         }
         // 恢复readIndex, 让后面的handler也能读到xid
         byteBuf.readerIndex(byteBuf.readerIndex() - 4);

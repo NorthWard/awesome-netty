@@ -1,23 +1,24 @@
 package com.north.netty.redis;
 
-import com.north.netty.redis.cmd.impl.getcmd.str.GetStringCmd;
-import com.north.netty.redis.cmd.impl.setcmd.str.SetStringCmd;
+import com.north.netty.redis.cmd.impl.getcmd.binary.GetBinaryCmd;
+import com.north.netty.redis.cmd.impl.setcmd.binary.SetBinaryCmd;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
 
 /**
  * @author laihaohua
  */
-public class RedisStringClient {
+public class RedisBinaryClient {
     private String host;
     private int port;
     private Channel channel;
 
-    public RedisStringClient(String host, int port) {
+    public RedisBinaryClient(String host, int port) {
         this.host = host;
         this.port = port;
         Bootstrap bootstrap = new Bootstrap();
@@ -29,7 +30,7 @@ public class RedisStringClient {
             @Override
             protected void initChannel(NioSocketChannel nioSocketChannel) throws Exception {
                 nioSocketChannel.pipeline()
-                        .addLast(new StringEncoder())
+                        //.addLast(new StringEncoder())
                         .addLast(new StringDecoder())
                 .addLast(new ChannelInboundHandlerAdapter(){
                     @Override
@@ -48,17 +49,22 @@ public class RedisStringClient {
         }
     }
 
-    public boolean set(String key, String v){
-        SetStringCmd setCmd = new SetStringCmd(key, v);
-        channel.writeAndFlush(setCmd.build());
+    public boolean set(byte [] key, byte [] v){
+        SetBinaryCmd setCmd = new SetBinaryCmd(key, v);
+        byte [] bytes = setCmd.build();
+        ByteBuf b = PooledByteBufAllocator.DEFAULT.buffer(bytes.length);
+        b.writeBytes(bytes);
+        channel.writeAndFlush(b);
         return true;
 
     }
 
-    public boolean get(String key){
-        GetStringCmd getStringCmd = new GetStringCmd(key);
-        channel.writeAndFlush(getStringCmd.build());
-        return true;
-
+    public byte[] get(byte [] key){
+        GetBinaryCmd getBinaryCmd = new GetBinaryCmd(key);
+        byte [] bytes = getBinaryCmd.build();
+        ByteBuf b = PooledByteBufAllocator.DEFAULT.buffer(bytes.length);
+        b.writeBytes(bytes);
+        channel.writeAndFlush(b);
+        return null;
     }
 }

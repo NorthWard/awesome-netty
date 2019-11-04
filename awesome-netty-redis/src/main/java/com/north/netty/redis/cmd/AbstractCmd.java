@@ -13,4 +13,5 @@ public abstract class AbstractCmd<T> implements Cmd<T> {
      * @return
      */
     protected abstract String getCmd();
+
 }

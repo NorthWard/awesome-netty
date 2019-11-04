@@ -9,7 +9,7 @@ import org.north.netty.zk.zkcodec.createcodec.ZkCreateCodec;
 import org.north.netty.zk.zkcodec.getchildren.ZkGetChildrenCodec;
 
 /**
- * codec 工厂
+ * codecs 工厂
  * @author laihaohua
  */
 public class ZkCodecFactories {
@@ -20,6 +20,6 @@ public class ZkCodecFactories {
             return new ZkCreateCodec(codecRegistry);
        }
 
-        throw new IllegalAccessException("cannot find codec for " + zkRequest.getClass());
+        throw new IllegalAccessException("cannot find codecs for " + zkRequest.getClass());
     }
 }
