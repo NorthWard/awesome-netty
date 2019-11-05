@@ -2,9 +2,7 @@ package com.north.netty.redis.cmd.impl.getcmd.binary;
 
 import com.north.netty.redis.cmd.CmdResp;
 import com.north.netty.redis.cmd.impl.getcmd.AbstractGetCmd;
-import com.north.netty.redis.exceptions.AwesomeNettyRedisException;
 import com.north.netty.redis.utils.CmdBuildUtils;
-import io.netty.buffer.ByteBuf;
 
 import java.util.Arrays;
 

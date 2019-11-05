@@ -1,5 +1,9 @@
 package com.north.netty.redis.enums;
 
+/**
+ * @author laihaohua
+ */
+
 public enum ExpireMode {
     /**
      * 过期时间是毫秒

@@ -1,5 +1,8 @@
 package com.north.netty.redis.config;
 
+/**
+ * @author laihaohua
+ */
 public class RedisConfig {
     public static String host = "localhost";
     public static int port = 6379;

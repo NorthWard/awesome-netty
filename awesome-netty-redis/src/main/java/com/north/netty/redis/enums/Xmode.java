@@ -1,5 +1,9 @@
 package com.north.netty.redis.enums;
 
+/**
+ * @author laihaohua
+ */
+
 public enum Xmode {
     /**
      * key存在的时候才创建

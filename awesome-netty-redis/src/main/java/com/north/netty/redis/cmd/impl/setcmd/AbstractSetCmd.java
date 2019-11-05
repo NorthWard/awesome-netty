@@ -1,7 +1,6 @@
 package com.north.netty.redis.cmd.impl.setcmd;
 
 import com.north.netty.redis.cmd.AbstractCmd;
-import com.north.netty.redis.cmd.CmdResp;
 
 import java.util.ArrayList;
 
