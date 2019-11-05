@@ -1,20 +1,19 @@
 package com.north.netty.redis.cmd.impl.setcmd.str;
 
+import com.north.netty.redis.cmd.CmdResp;
+import com.north.netty.redis.exceptions.AwesomeNettyRedisException;
 import com.north.netty.redis.utils.CmdBuildUtils;
 import com.north.netty.redis.cmd.impl.setcmd.AbstractSetCmd;
 import com.north.netty.redis.enums.ExpireMode;
 import com.north.netty.redis.enums.Xmode;
+import com.north.netty.redis.utils.SymbolUtils;
 
 /**
  *  命令参数
  *  set key value [EX seconds] [PX milliseconds] [NX|XX]
  * @author laihaohua
  */
-public class SetStringCmd extends AbstractSetCmd<String> {
-    private ExpireMode expireMode;
-    private Xmode xmode;
-    private long expireTime;
-    private String key;
+public class SetStringCmd extends AbstractSetCmd<String>  implements CmdResp<String, Boolean> {
     /**
      * 没有过期时间
      * @param key
@@ -42,5 +41,14 @@ public class SetStringCmd extends AbstractSetCmd<String> {
     @Override
     public String build() {
         return CmdBuildUtils.buildString(getCmd(), paramList);
+    }
+
+    @Override
+    public Boolean parseResp(String resp) {
+        char ch = resp.charAt(0);
+        if(ch == SymbolUtils.OK_PLUS.charAt(0)){
+              return true;
+        }
+        return true;
     }
 }

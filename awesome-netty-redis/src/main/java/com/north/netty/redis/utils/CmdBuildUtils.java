@@ -22,7 +22,7 @@ public class CmdBuildUtils {
      *   +"$paramnLen\r\n" + "paramn\r\n"
      * @return
      */
-     public static byte[] buildBinary(String cmd, List<byte []> paramList) {
+     public static byte[] buildBinary(String cmd, List<byte[]> paramList) {
         ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
         /*****************先写 *arrLen\r\n  ***********************/
         byteBuf.writeBytes(SymbolUtils.ARRAY_STAR_BYTE);
@@ -47,7 +47,7 @@ public class CmdBuildUtils {
 
 
         /*************** $paramNLen\r\n" + "paramN\r\n"  开始 *******************/
-        for(byte [] bs : paramList){
+        for(byte[] bs : paramList){
             byteBuf.writeBytes(SymbolUtils.BULK_DOLLAR_BYTE);
             byteBuf.writeBytes(EncodeUtils.getBytes(bs.length));
             byteBuf.writeBytes(SymbolUtils.CRLF_BYTE);

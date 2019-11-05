@@ -9,7 +9,7 @@ public class RedisConfig {
     public static int connectionCount = 10;
 
     /**
-     * 超时时间
+     * 超时时间 ms
      */
-    public static int TIME_OUT_MS =  20;
+    public static int TIME_OUT_MS =  5000;
 }

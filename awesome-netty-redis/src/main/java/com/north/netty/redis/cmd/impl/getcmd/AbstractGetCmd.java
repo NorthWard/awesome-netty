@@ -1,6 +1,7 @@
 package com.north.netty.redis.cmd.impl.getcmd;
 
 import com.north.netty.redis.cmd.AbstractCmd;
+import com.north.netty.redis.cmd.CmdResp;
 
 import java.util.ArrayList;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
  *  get key
  * @author laihaohua
  */
-public abstract class AbstractGetCmd<T> extends AbstractCmd<T> {
+public abstract class AbstractGetCmd<T> extends AbstractCmd<T>{
 
     public AbstractGetCmd(T  key){
         super();

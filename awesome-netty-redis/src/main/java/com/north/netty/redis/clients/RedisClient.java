@@ -1,4 +1,4 @@
-package com.north.netty.redis;
+package com.north.netty.redis.clients;
 
 import com.north.netty.redis.enums.ExpireMode;
 import com.north.netty.redis.enums.Xmode;
