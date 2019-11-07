@@ -10,6 +10,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>awesome-netty-elasticsearch</artifactId>
-
+    <dependencies>
+ <!--       <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>transport</artifactId>
+            <version>7.4.2</version>
+        </dependency>-->
+    </dependencies>
 
 </project>
