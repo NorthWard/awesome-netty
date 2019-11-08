@@ -8,6 +8,5 @@ public class kafkaProduceTest {
     public void testMetaData() throws InterruptedException {
         KafkaProducer kafkaProducer = new KafkaProducer();
         kafkaProducer.fetchMataData();
-        Thread.sleep(100000);
     }
 }

@@ -1,20 +1,17 @@
 package com.north.netty.kafka;
 
 import com.google.common.collect.Lists;
-import com.north.netty.kafka.bean.KafkaMetaRequest;
-import com.north.netty.kafka.bean.KafkaMetaResponse;
+import com.north.netty.kafka.bean.*;
+import com.north.netty.kafka.caches.RequestCacheCenter;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.*;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-import org.north.netty.common.utils.SerializeUtils;
-
-import java.util.Arrays;
+import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -23,6 +20,7 @@ public class KafkaProducer {
     private String clientId;
     private AtomicInteger requestId = new AtomicInteger(1);
     public KafkaProducer(){
+        this.clientId = "produce";
         EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
@@ -37,8 +35,16 @@ public class KafkaProducer {
                         .addLast(new ByteToMessageDecoder() {
                             @Override
                             protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-                                KafkaMetaResponse kafkaMetaResponse = new KafkaMetaResponse();
+                                KafkaResponseHeader kafkaResponseHeader = new KafkaResponseHeader();
+                                kafkaResponseHeader.deserialize(in);
+                                if(kafkaResponseHeader.getCorrelationId() == null){
+                                      throw new IllegalStateException("服务端返回的correlationId 为null");
+                                }
+                                AbstractKafkaResponse kafkaMetaResponse = RequestCacheCenter.getKafkaResponse(kafkaResponseHeader.getCorrelationId());
                                 kafkaMetaResponse.deserialize(in);
+                                kafkaMetaResponse.setKafkaResponseHeader(kafkaResponseHeader);
+                                kafkaMetaResponse.setCorrelationId(kafkaResponseHeader.getCorrelationId());
+                                RequestCacheCenter.putKafkaResponse(kafkaResponseHeader.getCorrelationId(), kafkaMetaResponse);
                             }
                         });
             }
@@ -53,14 +59,18 @@ public class KafkaProducer {
 
     }
     public void fetchMataData(){
-        KafkaMetaRequest kafkaMetaRequest = new KafkaMetaRequest("producer-1", 2);
+        Integer xId = requestId.getAndIncrement();
+        KafkaMetaRequest kafkaMetaRequest = new KafkaMetaRequest(clientId, xId);
         kafkaMetaRequest.setTopics(Lists.newArrayList("test"));
         ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
         kafkaMetaRequest.serializable(byteBuf);
-        byte [] bytes = new byte[byteBuf.writerIndex()];
-        byteBuf.getBytes(0, bytes);
-        System.out.println(Arrays.toString(bytes));
-        this.channel.writeAndFlush(byteBuf);
-       // SerializeUtils.
+        try {
+            RequestCacheCenter.putKafkaResponse(xId,  new KafkaMetaResponse());
+            this.channel.writeAndFlush(byteBuf).sync();
+            AbstractKafkaResponse response =  RequestCacheCenter.waitForResp(xId, 400000);
+            System.out.println(response);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

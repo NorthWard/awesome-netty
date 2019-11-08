@@ -10,16 +10,18 @@ import java.util.List;
 /**
  * @author laihaohua
  */
-public class KafkaMetaRequest extends KafkaRequestHeader implements Serializable {
+public class KafkaMetaRequest  implements Serializable, KafkaRequest {
     private List<String> topics;
     private boolean allowAutoTopicCreation = true;
     private short version = 1;
+    private KafkaRequestHeader header;
     public KafkaMetaRequest(String clientId, Integer correlationId){
         super();
-        super.setClientId(clientId);
-        super.setCorrelationId(correlationId);
-        super.setApiKey(ApiKeys.METADATA.id);
-        super.setApiVersion(version);
+        header = new KafkaRequestHeader();
+        header.setClientId(clientId);
+        header.setCorrelationId(correlationId);
+        header.setApiKey(ApiKeys.METADATA.id);
+        header.setApiVersion(version);
     }
     public List<String> getTopics() {
         return topics;
@@ -47,7 +49,7 @@ public class KafkaMetaRequest extends KafkaRequestHeader implements Serializable
 
     @Override
     public void serializable(ByteBuf out){
-        super.serializable(out);
+        header.serializable(out);
         SerializeUtils.writeStringListToBuffer(topics, out);
     }
 }

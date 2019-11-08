@@ -1,6 +1,16 @@
 package com.north.netty.kafka.bean;
 
-import java.io.Serializable;
+import io.netty.buffer.ByteBuf;
 
-public class KafkaResponse implements Serializable {
+/**
+ * @author laihaohua
+ */
+public interface KafkaResponse {
+
+    /**
+     *  反序列化这个响应体
+     * @param byteBuf
+     */
+     void deserialize(ByteBuf byteBuf);
+
 }
