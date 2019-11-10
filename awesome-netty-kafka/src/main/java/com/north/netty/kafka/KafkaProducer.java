@@ -52,11 +52,14 @@ public class KafkaProducer {
                                 if(kafkaResponseHeader.getCorrelationId() == null){
                                       throw new IllegalStateException("服务端返回的correlationId 为null");
                                 }
-                                AbstractKafkaResponse kafkaMetaResponse = RequestCacheCenter.getKafkaResponse(kafkaResponseHeader.getCorrelationId());
-                                kafkaMetaResponse.deserialize(in);
-                                kafkaMetaResponse.setKafkaResponseHeader(kafkaResponseHeader);
-                                kafkaMetaResponse.setCorrelationId(kafkaResponseHeader.getCorrelationId());
-                                RequestCacheCenter.putKafkaResponse(kafkaResponseHeader.getCorrelationId(), kafkaMetaResponse);
+                                AbstractKafkaResponse abstractKafkaResponse = RequestCacheCenter.getKafkaResponse(kafkaResponseHeader.getCorrelationId());
+                                if(abstractKafkaResponse == null){
+                                    throw new IllegalStateException("服务端返回的correlationId不是本客户端发送的");
+                                }
+                                abstractKafkaResponse.deserialize(in);
+                                abstractKafkaResponse.setKafkaResponseHeader(kafkaResponseHeader);
+                                abstractKafkaResponse.setCorrelationId(kafkaResponseHeader.getCorrelationId());
+                                RequestCacheCenter.putKafkaResponse(kafkaResponseHeader.getCorrelationId(), abstractKafkaResponse);
                             }
                         });
             }
@@ -117,13 +120,11 @@ public class KafkaProducer {
         ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
         produceRequest.serializable(byteBuf);
 
-        byte [] tmp = new  byte[byteBuf.writerIndex()];
-        byteBuf.getBytes(0, tmp);
-        System.out.println(Arrays.toString(tmp));
 
 
         try {
             this.channel.writeAndFlush(byteBuf).sync();
+            Thread.sleep(111111);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

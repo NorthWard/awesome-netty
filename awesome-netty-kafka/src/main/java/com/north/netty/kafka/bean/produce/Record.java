@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class Record implements Serializable {
     private Integer partition;
     private KafkaMsgRecordBatch kafkaMsgRecordBatch;
+
     public void serializable(ByteBuf out){
         out.writeInt(partition);
         if(kafkaMsgRecordBatch == null){
@@ -17,6 +18,10 @@ public class Record implements Serializable {
             kafkaMsgRecordBatch.serializable(out);
         }
 
+    }
+    public void deserialize(ByteBuf in){
+        this.partition = in.readInt();
+        kafkaMsgRecordBatch.deserialize(in);
     }
 
     public Integer getPartition() {

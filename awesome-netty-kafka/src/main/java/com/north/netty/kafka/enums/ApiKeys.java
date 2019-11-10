@@ -36,6 +36,11 @@ public enum ApiKeys {
      * 发送消息
      */
     PRODUCE(0, "Produce", (short) 5),
+
+    /**
+     * fetch 消息
+     */
+    FETCH(1, "Fetch", (short)6),
     /**
      * 拉取元数据
      */
