@@ -60,7 +60,7 @@ public class SerializeUtils {
      */
     public static void writeStringToBuffer2(String msg, ByteBuf out){
         if (msg == null) {
-            out.writeInt(-1);
+            out.writeShort(-1);
             return;
         }
         byte [] bytes = msg.getBytes(StandardCharsets.UTF_8);

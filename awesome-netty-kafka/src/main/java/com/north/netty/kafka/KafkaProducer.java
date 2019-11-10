@@ -2,6 +2,14 @@ package com.north.netty.kafka;
 
 import com.google.common.collect.Lists;
 import com.north.netty.kafka.bean.*;
+import com.north.netty.kafka.bean.meta.KafkaMetaRequest;
+import com.north.netty.kafka.bean.meta.KafkaMetaResponse;
+import com.north.netty.kafka.bean.msg.KafkaMsgRecordBatch;
+import com.north.netty.kafka.bean.msg.KafkaMsgRecordV2;
+import com.north.netty.kafka.bean.produce.PartitionData;
+import com.north.netty.kafka.bean.produce.ProduceRequest;
+import com.north.netty.kafka.bean.produce.Record;
+import com.north.netty.kafka.bean.produce.TopicProduceData;
 import com.north.netty.kafka.caches.RequestCacheCenter;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -12,6 +20,10 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,7 +32,7 @@ public class KafkaProducer {
     private String clientId;
     private AtomicInteger requestId = new AtomicInteger(1);
     public KafkaProducer(){
-        this.clientId = "produce";
+        this.clientId = "producer-1";
         EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
@@ -72,5 +84,49 @@ public class KafkaProducer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+    public void send(String key, String val){
+        KafkaMsgRecordV2 kafkaMsgRecordV2 = null;
+        try {
+            kafkaMsgRecordV2 = new KafkaMsgRecordV2(key.getBytes("UTF8"), val.getBytes("UTF8"), null);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        KafkaMsgRecordBatch kafkaMsgRecordBatch = new KafkaMsgRecordBatch(kafkaMsgRecordV2);
+
+
+        Record record = new Record();
+        record.setPartition(0);
+        record.setKafkaMsgRecordBatch(kafkaMsgRecordBatch);
+
+        PartitionData partitionData = new PartitionData();
+        partitionData.setRecordSset(record);
+
+        TopicProduceData topicProduceData = new TopicProduceData();
+        topicProduceData.setTopic("test");
+        topicProduceData.setData(Lists.newArrayList(partitionData));
+
+        Integer xid = requestId.getAndIncrement();
+        ProduceRequest produceRequest = new ProduceRequest(clientId, xid);
+        produceRequest.setAcks((short)-1);
+        produceRequest.setTimeOut(30000);
+        produceRequest.setTransactionalId(null);
+        produceRequest.setTopicData(Lists.newArrayList(topicProduceData));
+
+
+        ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
+        produceRequest.serializable(byteBuf);
+
+        byte [] tmp = new  byte[byteBuf.writerIndex()];
+        byteBuf.getBytes(0, tmp);
+        System.out.println(Arrays.toString(tmp));
+
+
+        try {
+            this.channel.writeAndFlush(byteBuf).sync();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 }

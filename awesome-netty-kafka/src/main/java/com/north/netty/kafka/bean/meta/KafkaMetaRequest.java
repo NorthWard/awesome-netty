@@ -1,5 +1,7 @@
-package com.north.netty.kafka.bean;
+package com.north.netty.kafka.bean.meta;
 
+import com.north.netty.kafka.bean.KafkaRequest;
+import com.north.netty.kafka.bean.KafkaRequestHeader;
 import com.north.netty.kafka.enums.ApiKeys;
 import io.netty.buffer.ByteBuf;
 import org.north.netty.common.utils.SerializeUtils;
@@ -13,7 +15,6 @@ import java.util.List;
 public class KafkaMetaRequest  implements Serializable, KafkaRequest {
     private List<String> topics;
     private boolean allowAutoTopicCreation = true;
-    private short version = 1;
     private KafkaRequestHeader header;
     public KafkaMetaRequest(String clientId, Integer correlationId){
         super();
@@ -21,7 +22,7 @@ public class KafkaMetaRequest  implements Serializable, KafkaRequest {
         header.setClientId(clientId);
         header.setCorrelationId(correlationId);
         header.setApiKey(ApiKeys.METADATA.id);
-        header.setApiVersion(version);
+        header.setApiVersion(ApiKeys.METADATA.apiVersion);
     }
     public List<String> getTopics() {
         return topics;
@@ -37,14 +38,6 @@ public class KafkaMetaRequest  implements Serializable, KafkaRequest {
 
     public void setAllowAutoTopicCreation(boolean allowAutoTopicCreation) {
         this.allowAutoTopicCreation = allowAutoTopicCreation;
-    }
-
-    public short getVersion() {
-        return version;
-    }
-
-    public void setVersion(short version) {
-        this.version = version;
     }
 
     @Override

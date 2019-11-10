@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import org.north.netty.common.utils.SerializeUtils;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * @author laihaohua

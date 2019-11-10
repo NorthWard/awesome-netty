@@ -1,5 +1,7 @@
-package com.north.netty.kafka.bean;
+package com.north.netty.kafka.bean.meta;
 
+import com.north.netty.kafka.bean.AbstractKafkaResponse;
+import com.north.netty.kafka.bean.KafkaResponse;
 import com.north.netty.kafka.bean.broker.Broker;
 import com.north.netty.kafka.bean.topic.TopicMetaData;
 import io.netty.buffer.ByteBuf;
@@ -11,7 +13,7 @@ import java.util.List;
 /**
  * @author laihaohua
  */
-public class KafkaMetaResponse extends AbstractKafkaResponse  implements Serializable, KafkaResponse {
+public class KafkaMetaResponse extends AbstractKafkaResponse implements Serializable, KafkaResponse {
     private Integer throttleTimeMs;
     private List<Broker> brokers;
     private Integer controllerId = -1;
