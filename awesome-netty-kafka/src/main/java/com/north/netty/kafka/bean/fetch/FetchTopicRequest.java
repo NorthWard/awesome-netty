@@ -20,4 +20,20 @@ public class FetchTopicRequest implements Serializable {
           }
         }
     }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public List<FetchTopicPartitionRequest> getPartitions() {
+        return partitions;
+    }
+
+    public void setPartitions(List<FetchTopicPartitionRequest> partitions) {
+        this.partitions = partitions;
+    }
 }

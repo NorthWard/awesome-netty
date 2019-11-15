@@ -15,6 +15,9 @@ public class KafkaMsgRecordV2 implements Serializable {
 
     private int msgBodySize;
 
+    public KafkaMsgRecordV2(){
+
+    }
     public KafkaMsgRecordV2(byte [] key, byte [] values, Map<String, byte[]> headers){
         this.key = key;
         this.values = values;
@@ -107,6 +110,37 @@ public class KafkaMsgRecordV2 implements Serializable {
             }
         }
 
+    }
+    public void deserialize(ByteBuf in){
+       this.msgBodySize = ByteUtils.readVarint(in);
+       this.attributes = in.readByte();
+       timestampDelta = ByteUtils.readVarlong(in);
+       offsetDelta = ByteUtils.readVarint(in);
+       int keyLen = ByteUtils.readVarint(in);
+       if(keyLen >= 0){
+           this.key = new byte[keyLen];
+           in.readBytes(key);
+       }
+
+       int valueLen = ByteUtils.readVarint(in);
+        if(valueLen >= 0){
+            this.values = new byte[valueLen];
+            in.readBytes(values);
+        }
+       int headerSize = ByteUtils.readVarint(in);
+        if(headerSize >= 0){
+            headers = new HashMap<>(headerSize);
+            for(int i=0; i < headerSize; i++){
+                keyLen = ByteUtils.readVarint(in);
+                byte [] bs = new byte[keyLen];
+                in.readBytes(bs);
+                String key = new String(bs);
+                valueLen = ByteUtils.readVarint(in);
+                bs = new byte[valueLen];
+                in.readBytes(bs);
+                headers.put(key, bs);
+            }
+        }
     }
     /**
      * 消息总长度

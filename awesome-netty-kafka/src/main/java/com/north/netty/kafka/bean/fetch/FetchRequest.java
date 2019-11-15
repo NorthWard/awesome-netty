@@ -63,4 +63,60 @@ public class FetchRequest implements Serializable, KafkaRequest {
         }
     }
 
+
+    public KafkaRequestHeader getHeader() {
+        return header;
+    }
+
+    public void setHeader(KafkaRequestHeader header) {
+        this.header = header;
+    }
+
+    public Integer getReplicaId() {
+        return replicaId;
+    }
+
+    public void setReplicaId(Integer replicaId) {
+        this.replicaId = replicaId;
+    }
+
+    public Integer getMaxWaitTime() {
+        return maxWaitTime;
+    }
+
+    public void setMaxWaitTime(Integer maxWaitTime) {
+        this.maxWaitTime = maxWaitTime;
+    }
+
+    public Integer getMinBytes() {
+        return minBytes;
+    }
+
+    public void setMinBytes(Integer minBytes) {
+        this.minBytes = minBytes;
+    }
+
+    public Integer getMaxBytes() {
+        return maxBytes;
+    }
+
+    public void setMaxBytes(Integer maxBytes) {
+        this.maxBytes = maxBytes;
+    }
+
+    public Byte getIsolationLevel() {
+        return isolationLevel;
+    }
+
+    public void setIsolationLevel(Byte isolationLevel) {
+        this.isolationLevel = isolationLevel;
+    }
+
+    public List<FetchTopicRequest> getTopics() {
+        return topics;
+    }
+
+    public void setTopics(List<FetchTopicRequest> topics) {
+        this.topics = topics;
+    }
 }

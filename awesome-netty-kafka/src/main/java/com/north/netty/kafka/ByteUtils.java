@@ -135,20 +135,20 @@ public final class ByteUtils {
      *
      * @throws IllegalArgumentException if variable-length value does not terminate after 5 bytes have been read
      */
-    public static int readVarint(ByteBuffer buffer) {
+    public static int readVarint(ByteBuf buffer) {
         int value = 0;
         int i = 0;
         int b;
-        while (((b = buffer.get()) & 0x80) != 0) {
+        while (((b = buffer.readByte()) & 0x80) != 0) {
             value |= (b & 0x7f) << i;
             i += 7;
-            if (i > 28)
+            if (i > 28) {
                 throw illegalVarintException(value);
+            }
         }
         value |= b << i;
         return (value >>> 1) ^ -(value & 1);
     }
-
     /**
      * Read an integer stored in variable-length format using zig-zag decoding from
      * <a href="http://code.google.com/apis/protocolbuffers/docs/encoding.html"> Google Protocol Buffers</a>.
@@ -206,11 +206,11 @@ public final class ByteUtils {
      *
      * @throws IllegalArgumentException if variable-length value does not terminate after 10 bytes have been read
      */
-    public static long readVarlong(ByteBuffer buffer)  {
+    public static long readVarlong(ByteBuf buffer)  {
         long value = 0L;
         int i = 0;
         long b;
-        while (((b = buffer.get()) & 0x80) != 0) {
+        while (((b = buffer.readByte()) & 0x80) != 0) {
             value |= (b & 0x7f) << i;
             i += 7;
             if (i > 63)

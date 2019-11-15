@@ -6,6 +6,7 @@ import io.netty.buffer.ByteBuf;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FetchResponse  extends AbstractKafkaResponse implements Serializable, KafkaResponse {

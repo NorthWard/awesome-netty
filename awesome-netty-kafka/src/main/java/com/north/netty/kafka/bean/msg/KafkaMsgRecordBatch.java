@@ -6,11 +6,15 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class KafkaMsgRecordBatch implements Serializable {
     private int totalSize;
+    public KafkaMsgRecordBatch(){
+
+    }
     public KafkaMsgRecordBatch(KafkaMsgRecordV2 kafkaMsgRecordV2){
         this.msgs = Lists.newArrayList(kafkaMsgRecordV2);
         this.baseOffset = 0L;
@@ -21,6 +25,30 @@ public class KafkaMsgRecordBatch implements Serializable {
          */
         this.length = 61 + kafkaMsgRecordV2.getMsgSize() - 12;
         this.totalSize = 61 + kafkaMsgRecordV2.getMsgSize();
+    }
+
+    public void deserialize(ByteBuf in){
+        this.baseOffset = in.readLong();
+        this.length = in.readInt();
+        this.partitionLeaderVersion = in.readInt();
+        this.magic = in.readByte();
+        this.crc = in.readInt();
+        this.attributes = in.readShort();
+        this.lastOffsetDelta = in.readInt();
+        this.firstTimestamp = in.readLong();
+        this.maxTimestamp = in.readLong();
+        this.producerId = in.readLong();
+        this.epoch = in.readShort();
+        this.sequence = in.readInt();
+        this.numRecords = in.readInt();
+        if(numRecords >= 0){
+            msgs = new ArrayList<>(numRecords);
+            for(int i=0; i<numRecords; i++){
+                KafkaMsgRecordV2 kafkaMsgRecordV2 = new KafkaMsgRecordV2();
+                kafkaMsgRecordV2.deserialize(in);
+                msgs.add(kafkaMsgRecordV2);
+            }
+        }
     }
     public void serializable(ByteBuf out){
         out.writeLong(this.baseOffset);
