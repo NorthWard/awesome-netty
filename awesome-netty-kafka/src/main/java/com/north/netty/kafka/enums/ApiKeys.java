@@ -16,18 +16,6 @@
  */
 package com.north.netty.kafka.enums;
 
-import org.apache.kafka.common.protocol.types.Schema;
-import org.apache.kafka.common.protocol.types.SchemaException;
-import org.apache.kafka.common.protocol.types.Struct;
-import org.apache.kafka.common.protocol.types.Type;
-import org.apache.kafka.common.record.RecordBatch;
-import org.apache.kafka.common.requests.*;
-
-import java.nio.ByteBuffer;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.apache.kafka.common.protocol.types.Type.*;
-
 /**
  * Identifiers for all the Kafka APIs
  */

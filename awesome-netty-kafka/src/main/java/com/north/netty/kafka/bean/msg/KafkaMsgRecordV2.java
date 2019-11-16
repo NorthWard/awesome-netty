@@ -1,6 +1,6 @@
 package com.north.netty.kafka.bean.msg;
 
-import com.north.netty.kafka.ByteUtils;
+import com.north.netty.kafka.utils.VarLengthUtils;
 import io.netty.buffer.ByteBuf;
 
 import java.io.Serializable;
@@ -33,63 +33,63 @@ public class KafkaMsgRecordV2 implements Serializable {
         // attributes属性的大小
         size += 1;
         // offsetDelta的大小
-        size += ByteUtils.sizeOfVarint(this.offsetDelta);
+        size += VarLengthUtils.sizeOfVarint(this.offsetDelta);
         // timestampDelta的大小
-        size += ByteUtils.sizeOfVarlong(this.timestampDelta);
+        size += VarLengthUtils.sizeOfVarlong(this.timestampDelta);
         if(this.key == null){
             // -1 占1位
-            size += ByteUtils.NULL_VARINT_SIZE_BYTES;
+            size += VarLengthUtils.NULL_VARINT_SIZE_BYTES;
         }else{
-            size += ByteUtils.sizeOfVarint(this.key.length);
+            size += VarLengthUtils.sizeOfVarint(this.key.length);
             size += this.key.length;
         }
         if(this.values == null){
             // -1 占1位
-            size += ByteUtils.NULL_VARINT_SIZE_BYTES;
+            size += VarLengthUtils.NULL_VARINT_SIZE_BYTES;
         }else{
-            size += ByteUtils.sizeOfVarint(this.values.length);
+            size += VarLengthUtils.sizeOfVarint(this.values.length);
             size += this.values.length;
         }
-        size += ByteUtils.sizeOfVarint(headers.size());
+        size += VarLengthUtils.sizeOfVarint(headers.size());
         for (Map.Entry<String, byte[]> header : headers.entrySet()) {
             String headerKey = header.getKey();
             if (headerKey == null) {
                 throw new IllegalArgumentException("Invalid null header key found in headers");
             }
 
-            int headerKeySize = ByteUtils.utf8Length(headerKey);
-            size += ByteUtils.sizeOfVarint(headerKeySize) + headerKeySize;
+            int headerKeySize = VarLengthUtils.utf8Length(headerKey);
+            size += VarLengthUtils.sizeOfVarint(headerKeySize) + headerKeySize;
 
             byte[] headerValue = header.getValue();
             if (headerValue == null) {
-                size += ByteUtils.NULL_VARINT_SIZE_BYTES;
+                size += VarLengthUtils.NULL_VARINT_SIZE_BYTES;
             } else {
-                size += ByteUtils.sizeOfVarint(headerValue.length) + headerValue.length;
+                size += VarLengthUtils.sizeOfVarint(headerValue.length) + headerValue.length;
             }
         }
 
         this.msgBodySize = size;
-        this.msgSize = ByteUtils.sizeOfVarint(size) + size;
+        this.msgSize = VarLengthUtils.sizeOfVarint(size) + size;
     }
     public void serializable(ByteBuf out){
-        ByteUtils.writeVarint(msgBodySize, out);
+        VarLengthUtils.writeVarint(msgBodySize, out);
         out.writeByte(attributes);
-        ByteUtils.writeVarlong(timestampDelta, out);
-        ByteUtils.writeVarint(offsetDelta, out);
+        VarLengthUtils.writeVarlong(timestampDelta, out);
+        VarLengthUtils.writeVarint(offsetDelta, out);
         if(key == null){
-            ByteUtils.writeVarint(-1, out);
+            VarLengthUtils.writeVarint(-1, out);
         }else{
-            ByteUtils.writeVarint(key.length, out);
+            VarLengthUtils.writeVarint(key.length, out);
             out.writeBytes(key);
         }
         if(values == null){
-            ByteUtils.writeVarint(-1, out);
+            VarLengthUtils.writeVarint(-1, out);
         }else{
-            ByteUtils.writeVarint(values.length, out);
+            VarLengthUtils.writeVarint(values.length, out);
             out.writeBytes(values);
         }
 
-        ByteUtils.writeVarint(headers.size(), out);
+        VarLengthUtils.writeVarint(headers.size(), out);
 
         for (Map.Entry<String, byte[]> header : headers.entrySet()) {
             String headerKey = header.getKey();
@@ -98,44 +98,44 @@ public class KafkaMsgRecordV2 implements Serializable {
             }
 
             byte[] utf8Bytes = headerKey.getBytes(StandardCharsets.UTF_8);
-            ByteUtils.writeVarint(utf8Bytes.length, out);
+            VarLengthUtils.writeVarint(utf8Bytes.length, out);
             out.writeBytes(utf8Bytes);
 
             byte[] headerValue = header.getValue();
             if (headerValue == null) {
-                ByteUtils.writeVarint(-1, out);
+                VarLengthUtils.writeVarint(-1, out);
             } else {
-                ByteUtils.writeVarint(headerValue.length, out);
+                VarLengthUtils.writeVarint(headerValue.length, out);
                 out.writeBytes(headerValue);
             }
         }
 
     }
     public void deserialize(ByteBuf in){
-       this.msgBodySize = ByteUtils.readVarint(in);
+       this.msgBodySize = VarLengthUtils.readVarint(in);
        this.attributes = in.readByte();
-       timestampDelta = ByteUtils.readVarlong(in);
-       offsetDelta = ByteUtils.readVarint(in);
-       int keyLen = ByteUtils.readVarint(in);
+       timestampDelta = VarLengthUtils.readVarlong(in);
+       offsetDelta = VarLengthUtils.readVarint(in);
+       int keyLen = VarLengthUtils.readVarint(in);
        if(keyLen >= 0){
            this.key = new byte[keyLen];
            in.readBytes(key);
        }
 
-       int valueLen = ByteUtils.readVarint(in);
+       int valueLen = VarLengthUtils.readVarint(in);
         if(valueLen >= 0){
             this.values = new byte[valueLen];
             in.readBytes(values);
         }
-       int headerSize = ByteUtils.readVarint(in);
+       int headerSize = VarLengthUtils.readVarint(in);
         if(headerSize >= 0){
             headers = new HashMap<>(headerSize);
             for(int i=0; i < headerSize; i++){
-                keyLen = ByteUtils.readVarint(in);
+                keyLen = VarLengthUtils.readVarint(in);
                 byte [] bs = new byte[keyLen];
                 in.readBytes(bs);
                 String key = new String(bs);
-                valueLen = ByteUtils.readVarint(in);
+                valueLen = VarLengthUtils.readVarint(in);
                 bs = new byte[valueLen];
                 in.readBytes(bs);
                 headers.put(key, bs);

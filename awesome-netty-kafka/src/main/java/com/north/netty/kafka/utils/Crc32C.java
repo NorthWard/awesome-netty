@@ -15,16 +15,8 @@
  * limitations under the License.
  */
 
-package com.north.netty.kafka;
+package com.north.netty.kafka.utils;
 
-import org.apache.kafka.common.utils.Checksums;
-import org.apache.kafka.common.utils.Java;
-import org.apache.kafka.common.utils.PureJavaCrc32C;
-
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-import java.nio.ByteBuffer;
 import java.util.zip.Checksum;
 
 /**

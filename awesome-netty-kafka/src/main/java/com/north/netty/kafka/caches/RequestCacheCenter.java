@@ -10,20 +10,20 @@ import java.util.concurrent.TimeUnit;
  * @author laihaohua
  */
 public final class RequestCacheCenter {
-    private static Cache<Integer, AbstractKafkaResponse> cache = CacheBuilder.newBuilder()
+    private  Cache<Integer, AbstractKafkaResponse> cache = CacheBuilder.newBuilder()
             .concurrencyLevel(Runtime.getRuntime().availableProcessors())
             .expireAfterAccess(5, TimeUnit.MINUTES)
             .build();
 
-    public static void putKafkaResponse(Integer correlationId, AbstractKafkaResponse kafkaResponse){
+    public  void putKafkaResponse(Integer correlationId, AbstractKafkaResponse kafkaResponse){
         cache.put(correlationId, kafkaResponse);
     }
 
-    public static AbstractKafkaResponse getKafkaResponse(Integer correlationId){
+    public  AbstractKafkaResponse getKafkaResponse(Integer correlationId){
         return cache.getIfPresent(correlationId);
     }
 
-    public static AbstractKafkaResponse waitForResp(Integer correlationId, long timeoutMs){
+    public  AbstractKafkaResponse waitForResp(Integer correlationId, long timeoutMs){
         long bt = System.currentTimeMillis();
         AbstractKafkaResponse  response =  null;
         while(response == null || response.getCorrelationId() == null){

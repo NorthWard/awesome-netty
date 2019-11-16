@@ -25,4 +25,19 @@ public class FetchTopicResponse implements Serializable {
         }
     }
 
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public List<FetchPartitionResp> getPartitionResps() {
+        return partitionResps;
+    }
+
+    public void setPartitionResps(List<FetchPartitionResp> partitionResps) {
+        this.partitionResps = partitionResps;
+    }
 }

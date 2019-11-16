@@ -44,5 +44,6 @@ public class KafkaMetaRequest  implements Serializable, KafkaRequest {
     public void serializable(ByteBuf out){
         header.serializable(out);
         SerializeUtils.writeStringListToBuffer(topics, out);
+        out.writeBoolean(allowAutoTopicCreation);
     }
 }

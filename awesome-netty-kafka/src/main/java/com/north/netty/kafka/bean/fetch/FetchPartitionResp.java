@@ -18,4 +18,20 @@ public class FetchPartitionResp implements Serializable {
         recordSset = new Record();
         recordSset.deserialize(in);
     }
+
+    public FetchPartitionHeader getPartitionHeaders() {
+        return partitionHeaders;
+    }
+
+    public void setPartitionHeaders(FetchPartitionHeader partitionHeaders) {
+        this.partitionHeaders = partitionHeaders;
+    }
+
+    public Record getRecordSset() {
+        return recordSset;
+    }
+
+    public void setRecordSset(Record recordSset) {
+        this.recordSset = recordSset;
+    }
 }

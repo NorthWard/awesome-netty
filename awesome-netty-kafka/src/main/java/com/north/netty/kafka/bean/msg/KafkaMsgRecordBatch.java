@@ -1,13 +1,12 @@
 package com.north.netty.kafka.bean.msg;
 
 import com.google.common.collect.Lists;
-import com.north.netty.kafka.Crc32C;
+import com.north.netty.kafka.utils.Crc32C;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class KafkaMsgRecordBatch implements Serializable {

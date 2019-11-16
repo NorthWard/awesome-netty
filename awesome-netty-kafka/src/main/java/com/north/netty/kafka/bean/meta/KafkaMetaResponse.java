@@ -66,7 +66,6 @@ public class KafkaMetaResponse extends AbstractKafkaResponse implements Serializ
 
     @Override
     public void deserialize(ByteBuf byteBuf) {
-        //this.throttleTimeMs = byteBuf.readInt();
         int brokerIdCount = byteBuf.readInt();
         if(brokerIdCount >= 0){
             brokers = new ArrayList<>(brokerIdCount);

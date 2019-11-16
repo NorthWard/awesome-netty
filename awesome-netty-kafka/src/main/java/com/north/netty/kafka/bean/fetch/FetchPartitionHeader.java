@@ -30,4 +30,52 @@ public class FetchPartitionHeader implements Serializable {
         }
 
     }
+
+    public Integer getPartition() {
+        return partition;
+    }
+
+    public void setPartition(Integer partition) {
+        this.partition = partition;
+    }
+
+    public Short getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(Short errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public Long getHighWaterMark() {
+        return highWaterMark;
+    }
+
+    public void setHighWaterMark(Long highWaterMark) {
+        this.highWaterMark = highWaterMark;
+    }
+
+    public Long getLastStableOffset() {
+        return lastStableOffset;
+    }
+
+    public void setLastStableOffset(Long lastStableOffset) {
+        this.lastStableOffset = lastStableOffset;
+    }
+
+    public Long getLogStartOffset() {
+        return logStartOffset;
+    }
+
+    public void setLogStartOffset(Long logStartOffset) {
+        this.logStartOffset = logStartOffset;
+    }
+
+    public List<AbortedTransaction> getAbortedTransactions() {
+        return abortedTransactions;
+    }
+
+    public void setAbortedTransactions(List<AbortedTransaction> abortedTransactions) {
+        this.abortedTransactions = abortedTransactions;
+    }
 }

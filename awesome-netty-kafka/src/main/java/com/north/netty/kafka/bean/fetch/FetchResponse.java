@@ -29,4 +29,20 @@ public class FetchResponse  extends AbstractKafkaResponse implements Serializabl
             }
         }
     }
+
+    public Integer getThrottleTime() {
+        return throttleTime;
+    }
+
+    public void setThrottleTime(Integer throttleTime) {
+        this.throttleTime = throttleTime;
+    }
+
+    public List<FetchTopicResponse> getResponses() {
+        return responses;
+    }
+
+    public void setResponses(List<FetchTopicResponse> responses) {
+        this.responses = responses;
+    }
 }
