@@ -17,7 +17,7 @@ import org.north.netty.zk.bean.getchildren.ZkGetChildrenRequest;
 import org.north.netty.zk.bean.getchildren.ZkGetChildrenResponse;
 import org.north.netty.zk.bean.login.ZkLoginRequest;
 import org.north.netty.zk.bean.login.ZkLoginResp;
-import org.north.netty.zk.registrys.ZkRegistry;
+import org.north.netty.zk.registrys.ZkCaches;
 import org.north.netty.zk.utils.CreateMode;
 import org.north.netty.zk.utils.OpCode;
 import org.north.netty.zk.zkcodec.login.ZkLoginCodec;
@@ -40,7 +40,7 @@ public class NettyZkClient {
     private int zkPort;
     private String passWord;
     private Channel channel;
-    private final ZkRegistry zkRegistry = new ZkRegistry();
+    private final ZkCaches zkRegistry = new ZkCaches();
     private final ZkLoginHandler zkLoginHandler = new ZkLoginHandler(zkRegistry);
     private final AtomicInteger atomicIntegerXid = new AtomicInteger(1);
 

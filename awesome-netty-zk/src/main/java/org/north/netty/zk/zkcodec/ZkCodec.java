@@ -5,7 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
 import org.north.netty.zk.bean.ZkRequest;
 import org.north.netty.zk.factories.ZkCodecFactories;
-import org.north.netty.zk.registrys.ZkRegistry;
+import org.north.netty.zk.registrys.ZkCaches;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class ZkCodec extends ZkAbstractCodec<ZkRequest> {
 
-    public ZkCodec(ZkRegistry codecRegistry) {
+    public ZkCodec(ZkCaches codecRegistry) {
         super(codecRegistry);
     }
 

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import org.north.netty.zk.bean.login.ZkLoginResp;
-import org.north.netty.zk.registrys.ZkRegistry;
+import org.north.netty.zk.registrys.ZkCaches;
 import org.north.netty.zk.zkcodec.ZkCodec;
 
 import java.util.List;
@@ -21,8 +21,8 @@ public class ZkLoginHandler extends MessageToMessageDecoder<ZkLoginResp>{
 
     private volatile boolean isLogon;
     private volatile ZkLoginResp zkLoginResp;
-    private ZkRegistry codecRegistry;
-    public ZkLoginHandler(ZkRegistry codecRegistry){
+    private ZkCaches codecRegistry;
+    public ZkLoginHandler(ZkCaches codecRegistry){
         this.codecRegistry = codecRegistry;
     }
     @Override

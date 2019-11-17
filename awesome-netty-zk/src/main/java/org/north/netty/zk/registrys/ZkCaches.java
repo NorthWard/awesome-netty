@@ -12,7 +12,7 @@ import java.util.concurrent.TimeoutException;
  * 一个缓存中心, 保存zkClient实例中每个xid对应的codec
  * @author laihaohua
  */
-public final class ZkRegistry {
+public final class ZkCaches {
     private  final Cache<Integer, ByteToMessageCodec> codecMap  = CacheBuilder.newBuilder()
             .concurrencyLevel(Runtime.getRuntime().availableProcessors())
             .expireAfterAccess(5, TimeUnit.MINUTES)

@@ -7,7 +7,7 @@ import org.north.netty.zk.bean.create.ZkAcl;
 import org.north.netty.zk.bean.create.ZkAclId;
 import org.north.netty.zk.bean.create.ZkCreateRequest;
 import org.north.netty.zk.bean.create.ZkCreateResponse;
-import org.north.netty.zk.registrys.ZkRegistry;
+import org.north.netty.zk.registrys.ZkCaches;
 import org.north.netty.zk.zkcodec.ZkAbstractCodec;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @author laihaohua
  */
 public class ZkCreateCodec extends ZkAbstractCodec<ZkCreateRequest> {
-    public ZkCreateCodec(ZkRegistry codecRegistry) {
+    public ZkCreateCodec(ZkCaches codecRegistry) {
         super(codecRegistry);
     }
 

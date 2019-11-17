@@ -5,7 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.north.netty.common.utils.SerializeUtils;
 import org.north.netty.zk.bean.getchildren.ZkGetChildrenRequest;
 import org.north.netty.zk.bean.getchildren.ZkGetChildrenResponse;
-import org.north.netty.zk.registrys.ZkRegistry;
+import org.north.netty.zk.registrys.ZkCaches;
 import org.north.netty.zk.zkcodec.ZkAbstractCodec;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.List;
  * @author laihaohua
  */
 public class ZkGetChildrenCodec extends ZkAbstractCodec<ZkGetChildrenRequest> {
-    public ZkGetChildrenCodec(ZkRegistry codecRegistry) {
+    public ZkGetChildrenCodec(ZkCaches codecRegistry) {
         super(codecRegistry);
     }
 
