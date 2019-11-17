@@ -12,6 +12,26 @@ import java.util.HashMap;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RedisBinaryClientTest {
+
+    public static final Key KEY = new Key("j");
+    public static final Val VAL = new Val("V");
+    @Test
+    public void test001(){
+        RedisBinaryClient redisClient = RedisBinaryClient.getInstance();
+        boolean b = redisClient.set(ProtostuffHelper.serializeObject(KEY, Key.class), ProtostuffHelper.serializeObject(VAL, Val.class));
+        assert b;
+    }
+
+    @Test
+    public void test002(){
+        RedisBinaryClient redisClient = RedisBinaryClient.getInstance();
+        byte [] bytes = redisClient.get(ProtostuffHelper.serializeObject(KEY, Key.class));
+        Val val = ProtostuffHelper.deSerializeObject(bytes, Val.class);
+        assert val.getVal().equals(VAL.getVal());
+    }
+
+
+
     public static class Key implements Serializable{
         public Key(){
 
@@ -45,21 +65,5 @@ public class RedisBinaryClientTest {
         public void setVal(Object val) {
             this.val = val;
         }
-    }
-    public static final Key KEY = new Key("j");
-    public static final Val VAL = new Val("V");
-    @Test
-    public void test001() throws InterruptedException {
-        RedisBinaryClient redisClient = RedisBinaryClient.getInstance();
-        boolean b = redisClient.set(ProtostuffHelper.serializeObject(KEY, Key.class), ProtostuffHelper.serializeObject(VAL, Val.class));
-        assert b;
-    }
-
-    @Test
-    public void test002() throws InterruptedException {
-        RedisBinaryClient redisClient = RedisBinaryClient.getInstance();
-        byte [] bytes = redisClient.get(ProtostuffHelper.serializeObject(KEY, Key.class));
-        Val val = ProtostuffHelper.deSerializeObject(bytes, Val.class);
-        assert val.getVal().equals(VAL.getVal());
     }
 }

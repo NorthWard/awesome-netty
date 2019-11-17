@@ -11,7 +11,7 @@ public class RedisStringClientTest {
     public static final String KEY = "TEST";
     public static final String VAL = "YES";
     @Test
-    public void test001() throws InterruptedException {
+    public void test001(){
         RedisStringClient redisStringClient = RedisStringClient.getInstance();
         boolean b  = redisStringClient.set(KEY, VAL);
         assert b;
@@ -20,7 +20,7 @@ public class RedisStringClientTest {
 
 
     @Test
-    public void test002() throws InterruptedException {
+    public void test002(){
         RedisStringClient redisStringClient = RedisStringClient.getInstance();
         String str = redisStringClient.get(KEY);
         assert  VAL.equalsIgnoreCase(str);
