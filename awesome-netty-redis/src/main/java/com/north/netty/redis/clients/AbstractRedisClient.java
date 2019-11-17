@@ -22,6 +22,7 @@ public abstract class AbstractRedisClient<T> implements RedisClient<T> {
     protected <RETURN> RETURN invokeCmd(Cmd<T> cmd, CmdResp<T, RETURN> cmdResp) throws FailedToGetConnectionException{
         RedisConnection<T> connection = null;
         try{
+            // 构建RESP结构体
             T data = cmd.build();
             // 从连接池中borrow连接
             connection = connectionPool.borrowConnection();
