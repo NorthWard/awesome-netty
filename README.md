@@ -20,5 +20,6 @@
 - zookeeper
 - redis
 - kafka
-- mysql
-- elasticsearch
+- mysql(未开始)
+- elasticsearch(未开始)
+- dubbo(未开始)
