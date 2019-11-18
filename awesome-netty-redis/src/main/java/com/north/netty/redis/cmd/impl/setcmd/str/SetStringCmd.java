@@ -21,6 +21,14 @@ public class SetStringCmd extends AbstractSetCmd<String>  implements CmdResp<Str
     public SetStringCmd(String key, String value){
           this(key, value, null, 0, null);
     }
+
+    /**
+     *
+     * @param key
+     * @param value
+     * @param expireMode
+     * @param expireTime
+     */
     public SetStringCmd(String key, String value, ExpireMode expireMode, long expireTime){
         this(key, value, expireMode, expireTime, null);
 
@@ -37,17 +45,28 @@ public class SetStringCmd extends AbstractSetCmd<String>  implements CmdResp<Str
     }
 
 
+    /**
+     * 构建请求参数RESP
+     * @return
+     */
     @Override
     public String build() {
         return CmdBuildUtils.buildString(getCmd(), paramList);
     }
 
+    /**
+     * 解析redis返回的RESP
+     * @param resp
+     * @return
+     */
     @Override
     public Boolean parseResp(String resp) {
         char ch = resp.charAt(0);
+        // 一般返回 +OK 就是成功
         if(ch == SymbolUtils.OK_PLUS.charAt(0)){
               return true;
         }
-        return true;
+        // 其他的都是失败
+        return false;
     }
 }
