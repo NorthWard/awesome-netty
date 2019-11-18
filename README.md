@@ -9,6 +9,14 @@
 
 ## 文档:
 
+### zookeeper
+[https://juejin.im/post/5dd1edc76fb9a0202b7a3d62](https://juejin.im/post/5dd1edc76fb9a0202b7a3d62)
+
+### redis
+马上出来
+
+### kafka
+马上出来
 
 
 
