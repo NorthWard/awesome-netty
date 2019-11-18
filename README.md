@@ -10,7 +10,7 @@
 ## 文档:
 
 ### zookeeper
-[https://juejin.im/post/5dd1edc76fb9a0202b7a3d62](https://juejin.im/post/5dd1edc76fb9a0202b7a3d62)
+[https://juejin.im/post/5dd296c0e51d4508182449a6](https://juejin.im/post/5dd296c0e51d4508182449a6)
 
 ### redis
 马上出来
