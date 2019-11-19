@@ -13,7 +13,7 @@
 [https://juejin.im/post/5dd296c0e51d4508182449a6](https://juejin.im/post/5dd296c0e51d4508182449a6)
 
 ### redis
-马上出来
+[https://juejin.im/post/5dd33ebde51d4508587c0d7a](https://juejin.im/post/5dd33ebde51d4508587c0d7a)
 
 ### kafka
 马上出来
